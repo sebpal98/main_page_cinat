@@ -179,6 +179,8 @@ function init() {
     // Add event listeners
     window.addEventListener("resize", onWindowResize, true);
     renderer.domElement.addEventListener("click", onDocumentMouseClick);
+    renderer.domElement.addEventListener("touchstart", onDocumentMouseClick);
+    renderer.domElement.addEventListener("touchend", onDocumentMouseClick);
     renderer.domElement.style.cursor = "pointer"; // Cambiar el cursor para indicar clickabilidad
 }
 
@@ -230,10 +232,16 @@ function onWindowResize() {
 }
 
 function onDocumentMouseClick(event) {
-    const mouse = new THREE.Vector2(
-        (event.clientX / window.innerWidth) * 2 - 1,
-        -(event.clientY / window.innerHeight) * 2 + 1
-    );
+    const mouse = new THREE.Vector2();
+    
+    if (event.type === 'touchstart' || event.type === 'touchend') {
+        const touch = event.touches[0];
+        mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+    } else {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
 
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
